@@ -10,6 +10,6 @@ export class CreateBookDto {
   @IsNotEmpty()
   readonly author: string;
 
-  // @IsNotEmpty()
-  // readonly categoryId: string;
+  @IsNotEmpty()
+  readonly categoryId: string;
 }

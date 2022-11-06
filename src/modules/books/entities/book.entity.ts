@@ -18,11 +18,11 @@ export class BookEntity extends BaseEntity {
   @IsNotEmpty()
   author: string;
 
-  @Column()
+  @Column({ default: 1 })
   @IsNotEmpty()
   count: number;
 
-  @Column()
+  @Column({ default: 0 })
   @IsNotEmpty()
   holdCount: number;
 
