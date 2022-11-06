@@ -1,16 +1,19 @@
 import { IsNotEmpty } from 'class-validator';
-import { BaseEntity } from 'src/modules/shared/entities/base.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 
-import { ICategory } from '../models/category.model';
+import { BaseEntity } from 'src/modules/shared/entities/base.entity';
+import { BookEntity } from 'src/modules/books/entities/book.entity';
 
 @Entity()
-export class CategoryEntity extends BaseEntity implements ICategory {
+export class CategoryEntity extends BaseEntity {
   @Column({ unique: true })
   @IsNotEmpty()
   name: string;
 
-  constructor(data: ICategory) {
+  @OneToMany(() => BookEntity, (book) => book.category)
+  books: BookEntity[];
+
+  constructor(data: Partial<CategoryEntity>) {
     super();
     if (data) {
       this.id = data.id;

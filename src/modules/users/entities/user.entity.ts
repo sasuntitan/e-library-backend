@@ -2,11 +2,10 @@ import { IsEmail, IsMobilePhone, IsNotEmpty } from 'class-validator';
 import { Column, Entity } from 'typeorm';
 
 import { BaseEntity } from 'src/modules/shared/entities/base.entity';
-import { IUser } from '../models/user.model';
 import { UserRole } from '../models/user-role.enum';
 
 @Entity()
-export class UserEntity extends BaseEntity implements IUser {
+export class UserEntity extends BaseEntity {
   @Column()
   @IsEmail()
   @IsNotEmpty()
@@ -29,7 +28,7 @@ export class UserEntity extends BaseEntity implements IUser {
   @Column()
   public phoneNumber: string;
 
-  constructor(data: IUser) {
+  constructor(data: Partial<UserEntity>) {
     super();
     if (data) {
       this.id = data.id;
