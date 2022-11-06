@@ -14,6 +14,8 @@ export class BookEntity extends BaseEntity implements IBook {
   @IsNotEmpty()
   description: string;
 
+  @Column()
+  @IsNotEmpty()
   author: string;
 
   constructor(data: IBook) {
