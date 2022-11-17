@@ -18,7 +18,7 @@ export class UsersService extends BaseService<UserEntity> {
   }
 
   async getUsers(getUsersRequestDto: GetUsersRequestDto) {
-    return this.userRepository.findAndCount({
+    const data = await this.userRepository.findAndCount({
       where: {
         role: UserRole.User,
         ...(getUsersRequestDto.name && {
@@ -31,6 +31,10 @@ export class UsersService extends BaseService<UserEntity> {
           : undefined,
       take: getUsersRequestDto.pageSize,
     });
+    return {
+      data: data[0],
+      count: data[1],
+    };
   }
 
   async getUserById(id: number) {

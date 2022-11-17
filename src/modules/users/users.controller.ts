@@ -9,12 +9,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { HasRoles } from '../shared/decorators/has-role.decorator';
 import { RolesGuard } from '../shared/guards/roles.guard';
 import { EditUserDto } from './dto/edit-user.dto';
 import { GetUsersRequestDto } from './dto/get-users-request.dto';
+import { GetUsersResponseDto } from './dto/get-users-response.dto';
 import { UserRole } from './models/user-role.enum';
 import { UsersService } from './users.service';
 
@@ -28,7 +29,7 @@ export class UsersController {
   @HasRoles(UserRole.Admin)
   @UseGuards(RolesGuard)
   @Get()
-  getUsers(@Query() query: GetUsersRequestDto) {
+  getUsers(@Query() query: GetUsersRequestDto): Promise<GetUsersResponseDto> {
     return this.usersService.getUsers(query);
   }
 
