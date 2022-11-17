@@ -36,6 +36,7 @@ export class UserEntity extends BaseEntity {
       this.password = data.password;
       this.name = data.name;
       this.phoneNumber = data.phoneNumber;
+      this.role = data.role || UserRole.User;
     }
   }
 }
