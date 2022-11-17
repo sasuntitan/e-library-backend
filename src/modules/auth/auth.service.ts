@@ -44,7 +44,7 @@ export class AuthService {
     };
   }
 
-  public async signin(userData: LoginUserDto): Promise<any> {
+  public async signin(userData: LoginUserDto) {
     try {
       const user = await this.usersService.getByEmail(userData.email);
       if (user && (await compare(userData.password, user.password))) {
