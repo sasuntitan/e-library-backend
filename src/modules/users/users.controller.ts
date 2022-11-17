@@ -6,10 +6,11 @@ import {
   Param,
   Put,
   Query,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { HasRoles } from '../shared/decorators/has-role.decorator';
 import { RolesGuard } from '../shared/guards/roles.guard';
@@ -31,6 +32,11 @@ export class UsersController {
   @Get()
   getUsers(@Query() query: GetUsersRequestDto): Promise<GetUsersResponseDto> {
     return this.usersService.getUsers(query);
+  }
+
+  @Get('/profile')
+  getMyProfile(@Request() req) {
+    return this.usersService.getUserById(req.user.userId);
   }
 
   @HasRoles(UserRole.Admin)
