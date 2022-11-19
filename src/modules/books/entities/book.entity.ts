@@ -26,14 +26,15 @@ export class BookEntity extends BaseEntity {
   @IsNotEmpty()
   holdCount: number;
 
-  @ManyToMany(() => CategoryEntity)
+  @ManyToMany(() => CategoryEntity, {
+    cascade: true,
+  })
   @JoinTable()
   categories: CategoryEntity[];
 
   constructor(data?: Partial<BookEntity>, categories?: CategoryEntity[]) {
     super();
     if (data) {
-      this.id = data.id;
       this.title = data.title;
       this.description = data.description;
       this.author = data.author;

@@ -2,6 +2,7 @@ import {
   IsEmail,
   IsMobilePhone,
   IsNotEmpty,
+  IsOptional,
   IsString,
   MinLength,
 } from 'class-validator';
@@ -22,6 +23,7 @@ export class CreateUserDto {
   @IsMobilePhone('am-AM')
   readonly phoneNumber: string;
 
+  @IsOptional()
   @IsString()
   readonly profilePictureUrl?: string;
 }
