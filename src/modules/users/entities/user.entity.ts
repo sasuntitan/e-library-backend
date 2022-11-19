@@ -28,6 +28,9 @@ export class UserEntity extends BaseEntity {
   @Column()
   public phoneNumber: string;
 
+  @Column({ nullable: true })
+  profilePictureUrl?: string;
+
   constructor(data: Partial<UserEntity>) {
     super();
     if (data) {
@@ -37,6 +40,7 @@ export class UserEntity extends BaseEntity {
       this.name = data.name;
       this.phoneNumber = data.phoneNumber;
       this.role = data.role || UserRole.User;
+      this.profilePictureUrl = data.profilePictureUrl;
     }
   }
 }
