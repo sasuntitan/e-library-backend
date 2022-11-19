@@ -50,11 +50,13 @@ export class UsersService extends BaseService<UserEntity> {
 
   async getUserById(id: number) {
     const user = await this.findById(id);
-    user.profilePictureUrl = join(
-      '/',
-      this.configService.get(ConfigEnum.UPLOAD_DESTINATION),
-      user.profilePictureUrl,
-    );
+    if (user.profilePictureUrl) {
+      user.profilePictureUrl = join(
+        '/',
+        this.configService.get(ConfigEnum.UPLOAD_DESTINATION),
+        user.profilePictureUrl,
+      );
+    }
     if (!user) {
       throw new NotFoundException();
     }
