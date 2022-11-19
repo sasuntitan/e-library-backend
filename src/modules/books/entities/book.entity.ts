@@ -22,6 +22,9 @@ export class BookEntity extends BaseEntity {
   @IsNotEmpty()
   count: number;
 
+  @Column({ nullable: true })
+  pictureUrl?: string;
+
   @Column({ default: 0 })
   @IsNotEmpty()
   holdCount: number;
@@ -39,6 +42,7 @@ export class BookEntity extends BaseEntity {
       this.description = data.description;
       this.author = data.author;
       this.categories = categories;
+      this.pictureUrl = data.pictureUrl;
     }
   }
 }

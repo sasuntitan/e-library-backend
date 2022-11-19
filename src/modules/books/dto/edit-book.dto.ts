@@ -1,6 +1,6 @@
 import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateBookDto {
+export class EditBookDto {
   @IsNotEmpty()
   @IsString()
   readonly title: string;
