@@ -23,5 +23,5 @@ export class CreateUserDto {
   readonly phoneNumber: string;
 
   @IsString()
-  readonly profilePictureUrl: string;
+  readonly profilePictureUrl?: string;
 }

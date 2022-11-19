@@ -1,5 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { BaseEntity } from 'src/modules/shared/entities/base.entity';
 import { CategoryEntity } from 'src/modules/category/entities/category.entity';
@@ -26,16 +26,18 @@ export class BookEntity extends BaseEntity {
   @IsNotEmpty()
   holdCount: number;
 
-  @ManyToOne(() => CategoryEntity, (category) => category.books)
-  category: CategoryEntity;
+  @ManyToMany(() => CategoryEntity)
+  @JoinTable()
+  categories: CategoryEntity[];
 
-  constructor(data?: Partial<BookEntity>) {
+  constructor(data?: Partial<BookEntity>, categories?: CategoryEntity[]) {
     super();
     if (data) {
       this.id = data.id;
       this.title = data.title;
       this.description = data.description;
       this.author = data.author;
+      this.categories = categories;
     }
   }
 }

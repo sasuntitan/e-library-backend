@@ -24,9 +24,9 @@ import { GetCategoriesRequestDto } from './dto/get-categories-request.dto';
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  @ApiBearerAuth()
-  @HasRoles(UserRole.Admin)
-  @UseGuards(RolesGuard)
+  // @ApiBearerAuth()
+  // @HasRoles(UserRole.Admin)
+  // @UseGuards(RolesGuard)
   @Post()
   addCategory(@Body() body: CreateCategoryDto) {
     return this.categoryService.addCategory(body);
