@@ -1,8 +1,11 @@
-import { IsMobilePhone, IsNotEmpty } from 'class-validator';
+import { IsMobilePhone, IsNotEmpty, IsString } from 'class-validator';
 
 export class EditUserDto {
   @IsNotEmpty()
   readonly name: string;
+
+  @IsString()
+  readonly profilePictureUrl?: string;
 
   @IsNotEmpty()
   @IsMobilePhone('am-AM')

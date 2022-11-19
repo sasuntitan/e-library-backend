@@ -39,6 +39,11 @@ export class UsersController {
     return this.usersService.getUserById(req.user.userId);
   }
 
+  @Put('/profile')
+  editMyProfile(@Request() req, @Body() body: EditUserDto) {
+    return this.usersService.editUser(req.user.userId, body);
+  }
+
   @HasRoles(UserRole.Admin)
   @UseGuards(RolesGuard)
   @Get(':id')

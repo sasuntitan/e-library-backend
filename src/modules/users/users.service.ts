@@ -67,6 +67,7 @@ export class UsersService extends BaseService<UserEntity> {
       throw new NotFoundException();
     }
 
+    user.profilePictureUrl = editUserDto.profilePictureUrl;
     user.name = editUserDto.name;
     user.phoneNumber = editUserDto.phoneNumber;
     await this.update(id, user);
