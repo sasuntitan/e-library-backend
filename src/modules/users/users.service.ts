@@ -1,9 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { join } from 'path';
 import { Like, Repository } from 'typeorm';
-import { ConfigEnum } from '../config/config.enum';
 
 import { BaseService } from '../shared/services/base.service';
 import { EditUserDto } from './dto/edit-user.dto';
@@ -36,27 +34,13 @@ export class UsersService extends BaseService<UserEntity> {
       take: getUsersRequestDto.pageSize,
     });
     return {
-      data: data[0].map((u) => {
-        u.profilePictureUrl = join(
-          '/',
-          this.configService.get(ConfigEnum.UPLOAD_DESTINATION),
-          u.profilePictureUrl,
-        );
-        return u;
-      }),
+      data: data[0],
       count: data[1],
     };
   }
 
   async getUserById(id: number) {
     const user = await this.findById(id);
-    if (user.profilePictureUrl) {
-      user.profilePictureUrl = join(
-        '/',
-        this.configService.get(ConfigEnum.UPLOAD_DESTINATION),
-        user.profilePictureUrl,
-      );
-    }
     if (!user) {
       throw new NotFoundException();
     }
