@@ -5,12 +5,16 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, IsNull, Repository } from 'typeorm';
 import { CategoryEntity } from '../category/entities/category.entity';
 
 import { BaseService } from '../shared/services/base.service';
 import { UserEntity } from '../users/entities/user.entity';
 import { UserRole } from '../users/models/user-role.enum';
+import {
+  BookRentHistoryModel,
+  BookRentHistoryResponseDto,
+} from './dto/book-rent-history.dto';
 import { CreateBookDto } from './dto/create-book.dto';
 import { EditBookDto } from './dto/edit-book.dto';
 import { GetBooksRequestDto } from './dto/get-books-request.dto';
@@ -79,6 +83,21 @@ export class BooksService extends BaseService<BookEntity> {
     await this.userBookRepository.save(userBookEntity);
   }
 
+  async unHoldBook(holdBookDto: HoldBookDto) {
+    const entity = await this.userBookRepository.findOneBy({
+      bookId: holdBookDto.bookId,
+      userId: holdBookDto.userId,
+      endDate: IsNull(),
+    });
+
+    if (!entity) {
+      throw new BadRequestException();
+    }
+
+    entity.endDate = new Date();
+    await this.userBookRepository.update(entity.bookToUserId, entity);
+  }
+
   async getBooks(getBooksRequestDto: GetBooksRequestDto) {
     const query = this.bookRepository.createQueryBuilder('book');
 
@@ -142,6 +161,33 @@ export class BooksService extends BaseService<BookEntity> {
         data.userBooks.length == 0 ? BookStatus.Available : BookStatus.Hold,
       title: data.title,
     } as BookModel;
+  }
+
+  async getBookHistory(id: number) {
+    const data = await this.userBookRepository.findAndCount({
+      where: {
+        bookId: id,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+      relations: ['user'],
+    });
+    if (!data) {
+      throw new NotFoundException();
+    }
+
+    return {
+      data: data[0].map((item) => {
+        return {
+          id: item.bookToUserId,
+          createdDate: item.createdAt,
+          endDate: item.endDate,
+          user: item.user,
+        } as BookRentHistoryModel;
+      }),
+      count: data[1],
+    } as BookRentHistoryResponseDto;
   }
 
   async editBook(id: number, editBookDto: EditBookDto) {

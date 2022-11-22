@@ -17,6 +17,7 @@ import { HasRoles } from '../shared/decorators/has-role.decorator';
 import { RolesGuard } from '../shared/guards/roles.guard';
 import { UserRole } from '../users/models/user-role.enum';
 import { BooksService } from './books.service';
+import { BookRentHistoryResponseDto } from './dto/book-rent-history.dto';
 import { CreateBookDto } from './dto/create-book.dto';
 import { EditBookDto } from './dto/edit-book.dto';
 import { GetBooksRequestDto } from './dto/get-books-request.dto';
@@ -38,13 +39,22 @@ export class BooksController {
     return this.booksService.addBook(body);
   }
 
-  // @ApiBearerAuth()
-  // @HasRoles(UserRole.Admin)
-  // @UseGuards(RolesGuard)
-  // @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @HasRoles(UserRole.Admin)
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post('hold')
   holdBook(@Body() body: HoldBookDto) {
     return this.booksService.holdBook(body);
+  }
+
+  @ApiBearerAuth()
+  @HasRoles(UserRole.Admin)
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Post('unhold')
+  unHoldBook(@Body() body: HoldBookDto) {
+    return this.booksService.unHoldBook(body);
   }
 
   @ApiBearerAuth()
@@ -67,5 +77,14 @@ export class BooksController {
   getBookById(@Param('id') id: number, @Request() req): Promise<BookModel> {
     const role = req.user ? req.user.role : UserRole.User;
     return this.booksService.getBookById(id, role);
+  }
+
+  @ApiBearerAuth()
+  @HasRoles(UserRole.Admin)
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':id/history')
+  getBookHistory(@Param('id') id: number): Promise<BookRentHistoryResponseDto> {
+    return this.booksService.getBookHistory(id);
   }
 }
