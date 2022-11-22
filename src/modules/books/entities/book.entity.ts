@@ -3,7 +3,6 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
 import { BaseEntity } from 'src/modules/shared/entities/base.entity';
 import { CategoryEntity } from 'src/modules/category/entities/category.entity';
-import { BookStatus } from '../models/book-status.model';
 
 import { UserBookEntity } from './user-book.entity';
 
@@ -33,9 +32,6 @@ export class BookEntity extends BaseEntity {
   })
   @JoinTable()
   categories: CategoryEntity[];
-
-  @Column({ default: BookStatus.Available })
-  status: BookStatus;
 
   @OneToMany(() => UserBookEntity, (bookToUser) => bookToUser.book)
   public userBooks!: UserBookEntity[];

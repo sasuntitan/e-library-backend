@@ -15,7 +15,5 @@ export class BookModel {
 
   categories: CategoryEntity[];
 
-  status: BookStatus;
-
   holdedUser?: UserModel;
 }
