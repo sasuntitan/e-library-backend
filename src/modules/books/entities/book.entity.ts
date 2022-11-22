@@ -1,8 +1,11 @@
 import { IsNotEmpty } from 'class-validator';
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
 import { BaseEntity } from 'src/modules/shared/entities/base.entity';
 import { CategoryEntity } from 'src/modules/category/entities/category.entity';
+import { BookStatus } from '../models/book-status.model';
+
+import { UserBookEntity } from './user-book.entity';
 
 @Entity()
 export class BookEntity extends BaseEntity {
@@ -25,15 +28,17 @@ export class BookEntity extends BaseEntity {
   @Column({ nullable: true })
   pictureUrl?: string;
 
-  @Column({ default: 0 })
-  @IsNotEmpty()
-  holdCount: number;
-
   @ManyToMany(() => CategoryEntity, {
     cascade: true,
   })
   @JoinTable()
   categories: CategoryEntity[];
+
+  @Column({ default: BookStatus.Available })
+  status: BookStatus;
+
+  @OneToMany(() => UserBookEntity, (bookToUser) => bookToUser.book)
+  public userBooks!: UserBookEntity[];
 
   constructor(data?: Partial<BookEntity>, categories?: CategoryEntity[]) {
     super();

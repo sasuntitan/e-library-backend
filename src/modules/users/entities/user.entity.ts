@@ -1,8 +1,9 @@
 import { IsEmail, IsMobilePhone, IsNotEmpty } from 'class-validator';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 import { BaseEntity } from 'src/modules/shared/entities/base.entity';
 import { UserRole } from '../models/user-role.enum';
+import { UserBookEntity } from 'src/modules/books/entities/user-book.entity';
 
 @Entity()
 export class UserEntity extends BaseEntity {
@@ -30,6 +31,9 @@ export class UserEntity extends BaseEntity {
 
   @Column({ nullable: true })
   profilePictureUrl?: string;
+
+  @OneToMany(() => UserBookEntity, (bookToUser) => bookToUser.user)
+  public userBooks!: UserBookEntity[];
 
   constructor(data: Partial<UserEntity>) {
     super();

@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { HasRoles } from '../shared/decorators/has-role.decorator';
@@ -27,6 +28,7 @@ export class CategoryController {
   @ApiBearerAuth()
   @HasRoles(UserRole.Admin)
   @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   addCategory(@Body() body: CreateCategoryDto) {
     return this.categoryService.addCategory(body);
@@ -42,11 +44,19 @@ export class CategoryController {
     return this.categoryService.getCategoryById(id);
   }
 
+  @ApiBearerAuth()
+  @HasRoles(UserRole.Admin)
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Put(':id')
   editCategory(@Param('id') id: number, @Body() body: EditCategoryDto) {
     return this.categoryService.editCategory(id, body);
   }
 
+  @ApiBearerAuth()
+  @HasRoles(UserRole.Admin)
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   deleteCategory(@Param('id') id: number) {
     return this.categoryService.deleteCategory(id);

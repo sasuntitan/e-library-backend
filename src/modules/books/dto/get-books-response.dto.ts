@@ -1,6 +1,6 @@
-import { BookEntity } from '../entities/book.entity';
+import { BookModel } from '../models/book.model';
 
 export class GetBooksResponseDto {
-  data: BookEntity[];
+  data: BookModel[];
   count: number;
 }

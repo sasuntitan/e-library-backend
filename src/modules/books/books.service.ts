@@ -1,16 +1,24 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { join } from 'path';
-import { Like, Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CategoryEntity } from '../category/entities/category.entity';
-import { ConfigEnum } from '../config/config.enum';
 
 import { BaseService } from '../shared/services/base.service';
+import { UserEntity } from '../users/entities/user.entity';
+import { UserRole } from '../users/models/user-role.enum';
 import { CreateBookDto } from './dto/create-book.dto';
 import { EditBookDto } from './dto/edit-book.dto';
 import { GetBooksRequestDto } from './dto/get-books-request.dto';
+import { HoldBookDto } from './dto/hold-book.dto';
 import { BookEntity } from './entities/book.entity';
+import { UserBookEntity } from './entities/user-book.entity';
+import { BookStatus } from './models/book-status.model';
+import { BookModel } from './models/book.model';
 
 @Injectable()
 export class BooksService extends BaseService<BookEntity> {
@@ -19,43 +27,121 @@ export class BooksService extends BaseService<BookEntity> {
     private readonly bookRepository: Repository<BookEntity>,
     @InjectRepository(CategoryEntity)
     private readonly categoryRepository: Repository<CategoryEntity>,
+    @InjectRepository(UserEntity)
+    private readonly usersRepository: Repository<UserEntity>,
+    @InjectRepository(UserBookEntity)
+    private readonly userBookRepository: Repository<UserBookEntity>,
     private readonly configService: ConfigService,
   ) {
     super(bookRepository);
   }
 
   async addBook(createBookDto: CreateBookDto) {
-    const categories = await this.categoryRepository
-      .createQueryBuilder('category')
-      .where('category.id IN (:...ids)', { ids: createBookDto.categoryIds })
-      .getMany();
+    const categories = await this.categoryRepository.findBy({
+      id: In(createBookDto.categoryIds),
+    });
 
     const bookToSave = new BookEntity(createBookDto);
     bookToSave.categories = categories;
     await this.add(bookToSave);
   }
 
-  async getBooks(getBooksRequestDto: GetBooksRequestDto) {
-    const data = await this.bookRepository.findAndCount({
-      where: {
-        ...(getBooksRequestDto.title && {
-          title: Like(`%${getBooksRequestDto.title}%`),
-        }),
-      },
+  async holdBook(holdBookDto: HoldBookDto) {
+    const query = this.bookRepository
+      .createQueryBuilder('book')
+      .where('book.id = :id', { id: holdBookDto.bookId })
+      .leftJoinAndSelect(
+        'book.userBooks',
+        'userBooks',
+        'userBooks.bookId = book.id AND userBooks.endDate is null',
+      );
+
+    const book = await query.getOne();
+    // const book = await this.findById(holdBookDto.bookId);
+
+    if (!book) {
+      throw new NotFoundException();
+    }
+
+    if (book.userBooks.length) {
+      throw new BadRequestException('Book is already taken');
+    }
+
+    const user = await this.usersRepository.findOneBy({
+      id: holdBookDto.userId,
     });
+    if (!user) {
+      throw new NotFoundException();
+    }
+    const userBookEntity = new UserBookEntity();
+    userBookEntity.book = book;
+    userBookEntity.user = user;
+    await this.userBookRepository.save(userBookEntity);
+  }
+
+  async getBooks(getBooksRequestDto: GetBooksRequestDto) {
+    const query = this.bookRepository.createQueryBuilder('book');
+
+    if (getBooksRequestDto.title) {
+      query.andWhere('book.title LIKE :title', {
+        title: `%${getBooksRequestDto.title}%`,
+      });
+    }
+
+    const data = await query
+      .leftJoinAndSelect(
+        'book.userBooks',
+        'userBooks',
+        'userBooks.bookId = book.id AND userBooks.endDate is null',
+      )
+      .leftJoinAndSelect('userBooks.user', 'user')
+      .getManyAndCount();
+
     return {
-      data: data[0].map((b) => {
-        if (b.pictureUrl !== null) {
-          b.pictureUrl = join(
-            '/',
-            this.configService.get(ConfigEnum.UPLOAD_DESTINATION),
-            b.pictureUrl,
-          );
-        }
-        return b;
+      data: data[0].map((item) => {
+        return {
+          id: item.id,
+          author: item.author,
+          description: item.description,
+          categories: item.categories,
+          holdedUser: item.userBooks[0]?.user,
+          pictureUrl: item.pictureUrl,
+          status:
+            item.userBooks.length == 0 ? BookStatus.Available : BookStatus.Hold,
+          title: item.title,
+        } as BookModel;
       }),
       count: data[1],
     };
+  }
+
+  async getBookById(id: number, role: UserRole) {
+    const query = this.bookRepository
+      .createQueryBuilder('book')
+      .leftJoinAndSelect(
+        'book.userBooks',
+        'userBooks',
+        'userBooks.bookId = book.id AND userBooks.endDate is null',
+      )
+      .leftJoinAndSelect('userBooks.user', 'user')
+      .where('book.id = :id', { id });
+
+    const data = await query.getOne();
+    if (!data) {
+      throw new NotFoundException();
+    }
+
+    return {
+      id: data.id,
+      author: data.author,
+      categories: data.categories,
+      description: data.description,
+      holdedUser: role === UserRole.Admin ? data.userBooks[0]?.user : null,
+      pictureUrl: data.pictureUrl,
+      status:
+        data.userBooks.length == 0 ? BookStatus.Available : BookStatus.Hold,
+      title: data.title,
+    } as BookModel;
   }
 
   async editBook(id: number, editBookDto: EditBookDto) {
@@ -68,10 +154,9 @@ export class BooksService extends BaseService<BookEntity> {
     book.title = editBookDto.title;
     book.description = editBookDto.description;
     book.author = editBookDto.author;
-    const categories = await this.categoryRepository
-      .createQueryBuilder('category')
-      .where('category.id IN (:...ids)', { ids: editBookDto.categoryIds })
-      .getMany();
+    const categories = await this.categoryRepository.findBy({
+      id: In(editBookDto.categoryIds),
+    });
     book.categories = categories;
     await this.update(id, book);
     return book;
