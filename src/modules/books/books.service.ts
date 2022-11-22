@@ -14,6 +14,8 @@ import { UserRole } from '../users/models/user-role.enum';
 import {
   BookRentHistoryModel,
   BookRentHistoryResponseDto,
+  UserRentHistoryModel,
+  UserRentHistoryResponseDto,
 } from './dto/book-rent-history.dto';
 import { CreateBookDto } from './dto/create-book.dto';
 import { EditBookDto } from './dto/edit-book.dto';
@@ -169,7 +171,7 @@ export class BooksService extends BaseService<BookEntity> {
         bookId: id,
       },
       order: {
-        createdAt: 'DESC',
+        createdAt: 'ASC',
       },
       relations: ['user'],
     });
@@ -188,6 +190,33 @@ export class BooksService extends BaseService<BookEntity> {
       }),
       count: data[1],
     } as BookRentHistoryResponseDto;
+  }
+
+  async getUserRentHistory(userId: number) {
+    const data = await this.userBookRepository.findAndCount({
+      where: {
+        userId: userId,
+      },
+      order: {
+        createdAt: 'ASC',
+      },
+      relations: ['book', 'book.categories'],
+    });
+    if (!data) {
+      throw new NotFoundException();
+    }
+
+    return {
+      data: data[0].map((item) => {
+        return {
+          id: item.bookToUserId,
+          createdDate: item.createdAt,
+          endDate: item.endDate,
+          book: item.book,
+        } as UserRentHistoryModel;
+      }),
+      count: data[1],
+    } as UserRentHistoryResponseDto;
   }
 
   async editBook(id: number, editBookDto: EditBookDto) {

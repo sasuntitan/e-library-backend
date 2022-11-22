@@ -17,7 +17,10 @@ import { HasRoles } from '../shared/decorators/has-role.decorator';
 import { RolesGuard } from '../shared/guards/roles.guard';
 import { UserRole } from '../users/models/user-role.enum';
 import { BooksService } from './books.service';
-import { BookRentHistoryResponseDto } from './dto/book-rent-history.dto';
+import {
+  BookRentHistoryResponseDto,
+  UserRentHistoryResponseDto,
+} from './dto/book-rent-history.dto';
 import { CreateBookDto } from './dto/create-book.dto';
 import { EditBookDto } from './dto/edit-book.dto';
 import { GetBooksRequestDto } from './dto/get-books-request.dto';
@@ -86,5 +89,16 @@ export class BooksController {
   @Get(':id/history')
   getBookHistory(@Param('id') id: number): Promise<BookRentHistoryResponseDto> {
     return this.booksService.getBookHistory(id);
+  }
+
+  @ApiBearerAuth()
+  @HasRoles(UserRole.Admin)
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/history/:userId')
+  getRentHistoryByUserId(
+    @Param('userId') userId: number,
+  ): Promise<UserRentHistoryResponseDto> {
+    return this.booksService.getUserRentHistory(userId);
   }
 }
