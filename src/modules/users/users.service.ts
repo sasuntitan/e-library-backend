@@ -1,9 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { hash } from 'bcrypt';
 import { Like, Repository } from 'typeorm';
 
 import { BaseService } from '../shared/services/base.service';
+import { EditPasswordDto } from './dto/edit-password.dto';
 import { EditUserDto } from './dto/edit-user.dto';
 import { GetUsersRequestDto } from './dto/get-users-request.dto';
 import { UserEntity } from './entities/user.entity';
@@ -57,6 +59,17 @@ export class UsersService extends BaseService<UserEntity> {
     user.profilePictureUrl = editUserDto.profilePictureUrl;
     user.name = editUserDto.name;
     user.phoneNumber = editUserDto.phoneNumber;
+    await this.update(id, user);
+    return user as UserModel;
+  }
+
+  async editUserPassword(id: number, editPasswordDto: EditPasswordDto) {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    user.password = await hash(editPasswordDto.password, 5);
     await this.update(id, user);
     return user as UserModel;
   }

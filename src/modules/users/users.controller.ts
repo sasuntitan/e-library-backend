@@ -14,6 +14,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { HasRoles } from '../shared/decorators/has-role.decorator';
 import { RolesGuard } from '../shared/guards/roles.guard';
+import { EditPasswordDto } from './dto/edit-password.dto';
 import { EditUserDto } from './dto/edit-user.dto';
 import { GetUsersRequestDto } from './dto/get-users-request.dto';
 import { GetUsersResponseDto } from './dto/get-users-response.dto';
@@ -42,6 +43,11 @@ export class UsersController {
   @Put('/profile')
   editMyProfile(@Request() req, @Body() body: EditUserDto) {
     return this.usersService.editUser(req.user.userId, body);
+  }
+
+  @Put('/profile/password')
+  editMyPassword(@Request() req, @Body() body: EditPasswordDto) {
+    return this.usersService.editUserPassword(req.user.userId, body);
   }
 
   @HasRoles(UserRole.Admin)
