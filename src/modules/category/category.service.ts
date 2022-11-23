@@ -10,6 +10,7 @@ import { BaseService } from '../shared/services/base.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { EditCategoryDto } from './dto/edit-category.dto';
 import { GetCategoriesRequestDto } from './dto/get-categories-request.dto';
+import { GetCategoriesResponseDto } from './dto/get-categories-response.dto';
 import { CategoryEntity } from './entities/category.entity';
 
 @Injectable()
@@ -33,13 +34,18 @@ export class CategoryService extends BaseService<CategoryEntity> {
   }
 
   async getCategories(getCategoriesRequestDto: GetCategoriesRequestDto) {
-    return this.categoryRepository.findAndCount({
+    const data = await this.categoryRepository.findAndCount({
       where: {
         ...(getCategoriesRequestDto.name && {
           name: Like(`%${getCategoriesRequestDto.name}%`),
         }),
       },
     });
+
+    return {
+      data: data[0],
+      count: data[1],
+    } as GetCategoriesResponseDto;
   }
 
   async getCategoryById(id: number) {
