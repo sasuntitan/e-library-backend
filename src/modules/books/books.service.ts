@@ -63,7 +63,6 @@ export class BooksService extends BaseService<BookEntity> {
       );
 
     const book = await query.getOne();
-    // const book = await this.findById(holdBookDto.bookId);
 
     if (!book) {
       throw new NotFoundException();
@@ -109,6 +108,21 @@ export class BooksService extends BaseService<BookEntity> {
       });
     }
 
+    if (getBooksRequestDto.categories) {
+      const categoryIds =
+        getBooksRequestDto.categories.length == 1
+          ? [+getBooksRequestDto.categories[0]]
+          : getBooksRequestDto.categories.map((c) => +c);
+      query.innerJoinAndSelect(
+        'book.categories',
+        'category',
+        'category.id IN (:...categoryIds)',
+        { categoryIds },
+      );
+    } else {
+      query.leftJoinAndSelect('book.categories', 'category');
+    }
+
     const data = await query
       .leftJoinAndSelect(
         'book.userBooks',
@@ -116,8 +130,18 @@ export class BooksService extends BaseService<BookEntity> {
         'userBooks.bookId = book.id AND userBooks.endDate is null',
       )
       .leftJoinAndSelect('userBooks.user', 'user')
-      .leftJoinAndSelect('book.categories', 'categories')
       .getManyAndCount();
+
+    if (
+      getBooksRequestDto.status === BookStatus[BookStatus.Hold as keyof any]
+    ) {
+      data[0] = data[0].filter((item) => !!item.userBooks.length);
+    } else if (
+      getBooksRequestDto.status ===
+      BookStatus[BookStatus.Available as keyof any]
+    ) {
+      data[0] = data[0].filter((item) => !item.userBooks.length);
+    }
 
     return {
       data: data[0].map((item) => {
