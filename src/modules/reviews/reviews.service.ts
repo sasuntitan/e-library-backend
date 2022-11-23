@@ -82,7 +82,7 @@ export class ReviewsService extends BaseService<ReviewEntity> {
     if (user.role === UserRole.Admin || user.sub === review.userId) {
       review.review = editReviewDto.review;
       await this.update(id, review);
-      return review;
+      return review as ReviewModel;
     }
     throw new ForbiddenException();
   }

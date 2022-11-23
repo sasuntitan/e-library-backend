@@ -54,14 +54,14 @@ export class UsersController {
   @HasRoles(UserRole.Admin)
   @UseGuards(RolesGuard)
   @Put(':id')
-  editCategory(@Param('id') id: number, @Body() body: EditUserDto) {
+  editUser(@Param('id') id: number, @Body() body: EditUserDto) {
     return this.usersService.editUser(id, body);
   }
 
   @HasRoles(UserRole.Admin)
   @UseGuards(RolesGuard)
   @Delete(':id')
-  deleteCategory(@Param('id') id: number) {
+  deleteUser(@Param('id') id: number) {
     return this.usersService.deleteUserById(id);
   }
 }

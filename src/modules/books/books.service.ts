@@ -260,6 +260,6 @@ export class BooksService extends BaseService<BookEntity> {
     });
     book.categories = categories;
     await this.update(id, book);
-    return book;
+    return book as BookModel;
   }
 }

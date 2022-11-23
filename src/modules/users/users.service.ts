@@ -8,6 +8,7 @@ import { EditUserDto } from './dto/edit-user.dto';
 import { GetUsersRequestDto } from './dto/get-users-request.dto';
 import { UserEntity } from './entities/user.entity';
 import { UserRole } from './models/user-role.enum';
+import { UserModel } from './models/user.model';
 
 @Injectable()
 export class UsersService extends BaseService<UserEntity> {
@@ -34,7 +35,7 @@ export class UsersService extends BaseService<UserEntity> {
       take: getUsersRequestDto.pageSize,
     });
     return {
-      data: data[0],
+      data: data[0] as UserModel[],
       count: data[1],
     };
   }
@@ -44,7 +45,7 @@ export class UsersService extends BaseService<UserEntity> {
     if (!user) {
       throw new NotFoundException();
     }
-    return user;
+    return user as UserModel;
   }
 
   async editUser(id: number, editUserDto: EditUserDto) {
@@ -57,7 +58,7 @@ export class UsersService extends BaseService<UserEntity> {
     user.name = editUserDto.name;
     user.phoneNumber = editUserDto.phoneNumber;
     await this.update(id, user);
-    return user;
+    return user as UserModel;
   }
 
   async deleteUserById(id: number) {
