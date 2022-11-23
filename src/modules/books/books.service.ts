@@ -255,11 +255,17 @@ export class BooksService extends BaseService<BookEntity> {
     book.title = editBookDto.title;
     book.description = editBookDto.description;
     book.author = editBookDto.author;
-    const categories = await this.categoryRepository.findBy({
-      id: In(editBookDto.categoryIds),
-    });
-    book.categories = categories;
-    await this.update(id, book);
+
+    if (editBookDto.categoryIds.length) {
+      const categories = await this.categoryRepository.findBy({
+        id: In(editBookDto.categoryIds),
+      });
+      book.categories = categories;
+    } else {
+      book.categories = [];
+    }
+
+    await this.bookRepository.save(book);
     return book as BookModel;
   }
 }
