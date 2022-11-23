@@ -36,7 +36,7 @@ export class ReviewsController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Put(':id')
-  editCategory(
+  editReview(
     @Param('id') id: number,
     @Body() body: EditReviewDto,
     @Request() req,
@@ -47,7 +47,7 @@ export class ReviewsController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  deleteCategory(@Param('id') id: number, @Request() req) {
+  deleteReview(@Param('id') id: number, @Request() req) {
     return this.reviewsService.deleteReview(id, req.user);
   }
 }
