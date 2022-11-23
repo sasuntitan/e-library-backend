@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateBookDto {
   @IsNotEmpty()
@@ -18,5 +18,6 @@ export class CreateBookDto {
   readonly categoryIds: number[];
 
   @IsString()
+  @IsOptional()
   pictureUrl?: string;
 }
