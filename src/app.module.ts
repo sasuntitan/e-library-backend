@@ -9,6 +9,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { ConfigModule } from './modules/config/config.module';
 import { ServeStaticConfigService } from './modules/config/serve-static-config.service';
 import { DatabaseModule } from './modules/database/database.module';
+import { ReviewsModule } from './modules/reviews/reviews.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { UsersModule } from './modules/users/users.module';
 
@@ -21,6 +22,7 @@ import { UsersModule } from './modules/users/users.module';
     BooksModule,
     CategoryModule,
     UploadModule,
+    ReviewsModule,
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticConfigService,
     }),

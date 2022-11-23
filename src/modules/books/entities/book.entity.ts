@@ -5,6 +5,7 @@ import { BaseEntity } from 'src/modules/shared/entities/base.entity';
 import { CategoryEntity } from 'src/modules/category/entities/category.entity';
 
 import { UserBookEntity } from './user-book.entity';
+import { ReviewEntity } from 'src/modules/reviews/entities/review.entity';
 
 @Entity()
 export class BookEntity extends BaseEntity {
@@ -35,6 +36,9 @@ export class BookEntity extends BaseEntity {
 
   @OneToMany(() => UserBookEntity, (bookToUser) => bookToUser.book)
   public userBooks!: UserBookEntity[];
+
+  @OneToMany(() => ReviewEntity, (review) => review.book)
+  reviews: ReviewEntity[];
 
   constructor(data?: Partial<BookEntity>, categories?: CategoryEntity[]) {
     super();
