@@ -1,6 +1,6 @@
-import { UserEntity } from '../entities/user.entity';
+import { UserModel } from '../models/user.model';
 
 export class GetUsersResponseDto {
-  data: UserEntity[];
+  data: UserModel[];
   count: number;
 }
