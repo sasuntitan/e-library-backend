@@ -116,6 +116,7 @@ export class BooksService extends BaseService<BookEntity> {
         'userBooks.bookId = book.id AND userBooks.endDate is null',
       )
       .leftJoinAndSelect('userBooks.user', 'user')
+      .leftJoinAndSelect('book.categories', 'categories')
       .getManyAndCount();
 
     return {
@@ -145,6 +146,7 @@ export class BooksService extends BaseService<BookEntity> {
         'userBooks.bookId = book.id AND userBooks.endDate is null',
       )
       .leftJoinAndSelect('userBooks.user', 'user')
+      .leftJoinAndSelect('book.categories', 'categories')
       .where('book.id = :id', { id });
 
     const data = await query.getOne();
