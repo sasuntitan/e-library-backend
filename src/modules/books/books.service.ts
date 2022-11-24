@@ -184,8 +184,8 @@ export class BooksService extends BaseService<BookEntity> {
       author: data.author,
       categories: data.categories,
       description: data.description,
-      holdedUser: role === UserRole.Admin ? data.userBooks[0]?.user : null,
-      holdedDate: data.userBooks[0]?.createdAt,
+      holdedUser: data.userBooks?.[0]?.user,
+      holdedDate: data.userBooks?.[0]?.createdAt,
       pictureUrl: data.pictureUrl,
       status:
         data.userBooks.length == 0 ? BookStatus.Available : BookStatus.Hold,
