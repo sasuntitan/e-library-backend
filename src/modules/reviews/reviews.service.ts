@@ -14,7 +14,6 @@ import { ReviewEntity } from './entities/review.entity';
 import { UserEntity } from '../users/entities/user.entity';
 import { GetBookReviewsResponseDto } from './dto/get-book-reviews.response.dto';
 import { EditReviewDto } from './dto/edit-review.dto';
-import { TokenPayloadModel } from '../auth/models/token-payload.model';
 import { UserRole } from '../users/models/user-role.enum';
 import { ReviewModel } from './models/review.model';
 
@@ -72,14 +71,14 @@ export class ReviewsService extends BaseService<ReviewEntity> {
   async editReview(
     id: number,
     editReviewDto: EditReviewDto,
-    user: TokenPayloadModel,
+    user: { role: UserRole; userId: number },
   ) {
     const review = await this.findById(id);
     if (!review) {
       throw new NotFoundException();
     }
 
-    if (user.role === UserRole.Admin || user.sub === review.userId) {
+    if (user.role === UserRole.Admin || user.userId === review.userId) {
       review.review = editReviewDto.review;
       await this.update(id, review);
       return review as ReviewModel;
@@ -87,12 +86,12 @@ export class ReviewsService extends BaseService<ReviewEntity> {
     throw new ForbiddenException();
   }
 
-  async deleteReview(id: number, user: TokenPayloadModel) {
+  async deleteReview(id: number, user: { role: UserRole; userId: number }) {
     const review = await this.findById(id);
     if (!review) {
       throw new NotFoundException();
     }
-    if (user.role === UserRole.Admin || user.sub === review.userId) {
+    if (user.role === UserRole.Admin || user.userId === review.userId) {
       await this.delete(id);
     }
     throw new ForbiddenException();
