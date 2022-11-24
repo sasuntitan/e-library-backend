@@ -25,7 +25,7 @@ export class ReviewsController {
   @UseGuards(AuthGuard('jwt'))
   @Post()
   addReview(@Body() body: CreateReviewDto, @Request() req) {
-    return this.reviewsService.addReview(body, req.user.id);
+    return this.reviewsService.addReview(body, req.user.userId);
   }
 
   @Get('books/:bookId')
