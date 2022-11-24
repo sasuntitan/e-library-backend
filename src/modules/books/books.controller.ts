@@ -75,6 +75,24 @@ export class BooksController {
   }
 
   @ApiBearerAuth()
+  @HasRoles(UserRole.Admin)
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/admin/history/:userId')
+  getRentHistoryByUserId(
+    @Param('userId') userId: number,
+  ): Promise<UserRentHistoryResponseDto> {
+    return this.booksService.getUserRentHistory(userId);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/user/history')
+  getLoggedInUserRentHistory(@Request() req): any {
+    return this.booksService.getUserRentHistory(req.user.userId);
+  }
+
+  @ApiBearerAuth()
   @UseGuards(CustomAuthGuard)
   @Get(':id')
   getBookById(@Param('id') id: number, @Request() req): Promise<BookModel> {
@@ -89,16 +107,5 @@ export class BooksController {
   @Get(':id/history')
   getBookHistory(@Param('id') id: number): Promise<BookRentHistoryResponseDto> {
     return this.booksService.getBookHistory(id);
-  }
-
-  @ApiBearerAuth()
-  @HasRoles(UserRole.Admin)
-  @UseGuards(RolesGuard)
-  @UseGuards(AuthGuard('jwt'))
-  @Get('/history/:userId')
-  getRentHistoryByUserId(
-    @Param('userId') userId: number,
-  ): Promise<UserRentHistoryResponseDto> {
-    return this.booksService.getUserRentHistory(userId);
   }
 }
