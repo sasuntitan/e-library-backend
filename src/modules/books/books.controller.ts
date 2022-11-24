@@ -88,7 +88,9 @@ export class BooksController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Get('/user/history')
-  getLoggedInUserRentHistory(@Request() req): any {
+  getLoggedInUserRentHistory(
+    @Request() req,
+  ): Promise<UserRentHistoryResponseDto> {
     return this.booksService.getUserRentHistory(req.user.userId);
   }
 
