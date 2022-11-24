@@ -16,8 +16,8 @@ import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../config/config.enum';
 
 @ApiBearerAuth()
-@ApiTags('upload')
-@Controller('upload')
+@ApiTags('file-upload')
+@Controller('file-upload')
 export class UploadController {
   constructor(private readonly configService: ConfigService) {}
 
