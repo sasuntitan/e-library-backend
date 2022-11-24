@@ -9,7 +9,7 @@ export class DatabaseConfigService implements TypeOrmOptionsFactory {
   constructor(private readonly configService: ConfigService) {}
   createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
-      type: 'postgres',
+      type: 'mysql',
       host: this.configService.get(ConfigEnum.DATABASE_HOST),
       port: this.configService.get(ConfigEnum.DATABASE_PORT),
       username: this.configService.get(ConfigEnum.DATABASE_USERNAME),
@@ -17,6 +17,7 @@ export class DatabaseConfigService implements TypeOrmOptionsFactory {
       database: this.configService.get(ConfigEnum.DATABASE_NAME),
       entities: [process.cwd(), '**/*.entity.{js, ts}'],
       synchronize: true,
+      charset: 'utf8_unicode_ci',
     };
   }
 }
