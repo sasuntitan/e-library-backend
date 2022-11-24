@@ -250,12 +250,6 @@ export class BooksService extends BaseService<BookEntity> {
   async editBook(id: number, editBookDto: EditBookDto) {
     const query = this.bookRepository
       .createQueryBuilder('book')
-      .leftJoinAndSelect(
-        'book.userBooks',
-        'userBooks',
-        'userBooks.bookId = book.id AND userBooks.endDate is null',
-      )
-      .leftJoinAndSelect('userBooks.user', 'user')
       .leftJoinAndSelect('book.categories', 'categories')
       .where('book.id = :id', { id });
 
@@ -279,17 +273,5 @@ export class BooksService extends BaseService<BookEntity> {
     }
 
     await this.bookRepository.save(book);
-    return {
-      id: book.id,
-      author: book.author,
-      categories: book.categories,
-      description: book.description,
-      holdedUser: book.userBooks[0]?.user,
-      holdedDate: book.userBooks[0]?.createdAt,
-      pictureUrl: book.pictureUrl,
-      status:
-        book.userBooks.length == 0 ? BookStatus.Available : BookStatus.Hold,
-      title: book.title,
-    } as BookModel;
   }
 }
