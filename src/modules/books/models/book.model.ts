@@ -16,4 +16,6 @@ export class BookModel {
   categories: CategoryEntity[];
 
   holdedUser?: UserModel;
+
+  holdedDate?: Date;
 }

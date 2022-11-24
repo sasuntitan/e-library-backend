@@ -151,6 +151,7 @@ export class BooksService extends BaseService<BookEntity> {
           description: item.description,
           categories: item.categories,
           holdedUser: item.userBooks[0]?.user,
+          holdedDate: item.userBooks[0]?.createdAt,
           pictureUrl: item.pictureUrl,
           status:
             item.userBooks.length == 0 ? BookStatus.Available : BookStatus.Hold,
