@@ -7,7 +7,7 @@ import { UserBookEntity } from 'src/modules/books/entities/user-book.entity';
 
 @Entity()
 export class UserEntity extends BaseEntity {
-  @Column()
+  @Column({ unique: true })
   @IsEmail()
   @IsNotEmpty()
   email: string;
